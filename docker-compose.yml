@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+
+        wpsqlos:
+                image: mysql:5.7
+                volumes:
+                        - wpsql_storage:/var/lib/mysql 
+                restart: always
+                environment:
+                        MYSQL_ROOT_PASSWORD: redhat
+                        MYSQL_USER: shubhamwp
+                        MYSQL_PASSWORD: wordpress
+                        MYSQL_DATABASE: mydb
+
+        wordpressos:            
+                image: wordpress:5.1.1-php7.3-apache
+                restart: always
+                depends_on:
+                        - wpsqlos
+                ports:
+                        - 8081:80
+                environment:
+                        WORDPRESS_DB_HOST: wpsqlos
+                        WORDPRESS_DB_USER: shubhamwp
+                        WORDPRESS_DB_PASSWORD: wordpress
+                        WORDPRESS_DB_NAME: mydb
+                volumes:
+                        - wpos_storage:/var/www/html
+
+        nextcloudmysql:
+                image: mysql:5.7
+                volumes:
+                        - ncmysql_storage:/var/lib/mysql
+                restart: always
+                environment:
+                        MYSQL_ROOT_PASSWORD: redhat
+                        MYSQL_USER: shubhambhalala
+                        MYSQL_PASSWORD: nextcloud
+                        MYSQL_DATABASE: ncmydb
+
+
+        nextcloudos:
+                image: nextcloud:16.0.10-apache
+                restart: always
+                volumes:
+                        - nc_storage:/var/www/html
+                depends_on:
+                        - nextcloudmysql
+                ports:
+                        - 8082:80
+                environment:
+                        MYSQL_HOST: nextcloudmysql
+                        MYSQL_USER: shubhambhalala
+                        MYSQL_PASSWORD: nextcloud
+                        MYSQL_DATABASE: ncmydb 
+
+                
+volumes:
+        wpos_storage:
+        wpsql_storage:
+        nc_storage:
+        ncmysql_storage:
+
